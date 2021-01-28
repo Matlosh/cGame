@@ -2,10 +2,13 @@
 #define MAPS_H
 
 class Maps {
-  public:
     int i, j;
-    static char simpleMap[20][60];
-    void showMap();
+  public:
+    static int currentMap;
+    static char maps[3][20][60];
+    static char cMap[20][60];
+    void nextMap();
+    void previousMap();
 };
 
 #include "maps.cpp"

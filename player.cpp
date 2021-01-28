@@ -2,9 +2,11 @@
 #include "entity.h"
 #include "additionalFunctions.h"
 #include "battleSystem.h"
+#include "maps.h"
+#include "equipment.h"
 
-void Player::changePosition(char mapName[20][60], int yPosition, int xPosition, char playerCharacter) {
-  mapName[yPosition][xPosition] = playerCharacter;
+void Player::changePosition(Maps* map, int yPosition, int xPosition, char playerCharacter) {
+  map->cMap[yPosition][xPosition] = playerCharacter;
 }
 
 void Player::normalAttack(Player* player, Entity* enemy, BattleSystem* bs) {
@@ -42,4 +44,11 @@ void Player::raiseDefense(Player* player, Entity* enemy, BattleSystem* bs) {
       } else {
         print("You failed!", bs->x, bs->y++);
       }
+}
+
+void Player::addItem(Equipment* items, Player* player) {
+  for(int j = 0; j < 23; j++) {
+    player->inventory[player->inventorySlot][j] = items->name[j];
+  }
+  player->inventorySlot++;
 }

@@ -2,6 +2,12 @@
 #include "player.h"
 #include "battleSystem.h"
 #include "additionalFunctions.h"
+#include "equipment.h"
+
+#include <string>
+#include <cstdlib>
+
+using namespace std;
 
 void Entity::normalAttack(Player* player, Entity* enemy, BattleSystem* bs) {
   int randNum;
@@ -38,4 +44,17 @@ void Entity::raiseDefense(Player* player, Entity* enemy, BattleSystem* bs) {
       } else {
         print(enemy->name + " failed!", bs->x, bs->y++);
       }
+}
+
+void enemyDraw(Entity enemy[], Player* player, BattleSystem* bs, Maps* map, Equipment items[]) {
+  int randNum = rand() % 101;
+  if(map->currentMap == 0) { //simpleMap
+    if(randNum <= 100) bs->battle(player, bs, &enemy[1], items);
+    else if(randNum > 50 && randNum <= 90) bs->battle(player, bs, &enemy[2], items);
+    else bs->battle(player, bs, &enemy[3], items);
+  }
+  else if(map->currentMap == 1) { //route1
+    if(randNum <= 80) bs->battle(player, bs, &enemy[4], items);
+    else bs->battle(player, bs, &enemy[1], items);
+  }
 }
