@@ -40,17 +40,16 @@ int main() {
   player.exp = 0;
   player.gold = 0;
   player.lvl = 1;
-  player.head = "none";
-  player.chest = "none";
-  player.hands = "none";
-  player.legs = "none";
-  player.feet = "none";
   player.inventorySlot = 0;
   for(int i = 0; i < (sizeof(player.inventoryItemAmount)/sizeof(player.inventoryItemAmount[0])); i++) {
     player.inventoryItemAmount[i] = -1;
     player.inventoryItemSubType[i] = "none";
   }
-  
+  for(int i = 0; i < (sizeof(player.armour)/sizeof(player.armour[0])); i++) {
+    player.armour[i] = "none"; // 0 = head, 1 = chest, 2 = hands, 3 = legs, 4 = feet
+    player.armourValues[i] = 0;
+  }
+
   BattleSystem bs;
   bs.x = 61;
   bs.y = 1;
@@ -65,14 +64,14 @@ int main() {
   enemy[1].expMax = 4;
   enemy[1].goldMin = 0;
   enemy[1].goldMax = 10;
-  enemy[1].firstItemChance = 50;
-  enemy[1].secondItemChance = 30;
-  enemy[1].thirdItemChance = 20;
-  enemy[1].fourthItemChance = 10;
-  enemy[1].firstItemNumber = 2;
-  enemy[1].secondItemNumber = 2;
-  enemy[1].thirdItemNumber = 2;
-  enemy[1].fourthItemNumber = 2;
+  enemy[1].firstItemChance = 20;
+  enemy[1].secondItemChance = 35;
+  enemy[1].thirdItemChance = 30;
+  enemy[1].fourthItemChance = 15;
+  enemy[1].firstItemNumber = 1;
+  enemy[1].secondItemNumber = 8;
+  enemy[1].thirdItemNumber = 1;
+  enemy[1].fourthItemNumber = 8;
 
   enemy[2].name = "boar";
   enemy[2].HP = 30;
@@ -106,26 +105,26 @@ int main() {
 
   //each isCountable == false must have subtype
   //each item must have type and isCountable
-  Equipment items[8];
+  Equipment items[9];
   items[0].name = "Sword";
-  items[0].attackValue = 5;
+  items[0].value = 5;
   items[0].type = "Weapon";
   items[0].isCountable = false;
 
   items[1].name = "Leather Helmet";
-  items[1].defenseValue = 5;
+  items[1].value = 5;
   items[1].type = "Armour";
   items[1].subtype = "Head";
   items[1].isCountable = false;
 
   items[2].name = "Leather Chestplate";
-  items[2].defenseValue = 8;
+  items[2].value = 8;
   items[2].type = "Armour";
   items[2].subtype = "Chest";
   items[2].isCountable = false;
 
   items[3].name = "Leather Boots";
-  items[3].defenseValue = 4;
+  items[3].value = 4;
   items[3].type = "Armour";
   items[3].subtype = "Feet";
   items[3].isCountable = false;
@@ -145,6 +144,12 @@ int main() {
   items[7].name = "Fourth Item";
   items[7].isCountable = false;
   items[7].type = "Armour";
+
+  items[8].name = "Legendary Helmet";
+  items[8].value = 20;
+  items[8].type = "Armour";
+  items[8].subtype = "Head";
+  items[8].isCountable = false;
 
   Menu menu;
 

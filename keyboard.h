@@ -6,7 +6,7 @@ void key(class Player* player, class Maps* map, class BattleSystem* bs, class Me
 int bsKeys();
 
 void movementKey(class Player* player, class Maps* map, class BattleSystem* bs, class Menu* menu, class Entity enemy[], class Equipment items[], int mapMoveNumberX, int mapMoveNumberY);
-void menuKeySettings(char cKey, char cSubKey);
+void menuKeySettings(char cKey, char cSubKey, class Menu* menu);
 void changeEquipmentKey(int x, int y, class Player* player, class Equipment items[], std::string armourType, class Menu* menu, char cSubKey);
 
 #include "keyboard.cpp"

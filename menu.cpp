@@ -3,10 +3,33 @@
 #include "player.h"
 #include "equipment.h"
 
+int Menu::positionValue = 0;
+int Menu::inventoryPosition = 0;
+
 void Menu::clearMenu() {
   for(i = 0; i < 8; i++) {
     print("                                                         ", 1, 21+i);
   }
+}
+
+void Menu::inventoryUpAndDownChecker(Menu* menu, Player* player) {
+  cursorEquipment = positionValue + 22;
+  if(positionValue > 6) positionValue--;
+  if(positionValue < 0) positionValue++;
+  if(cursorEquipment > 28 && inventoryPosition + 7 <= player->inventorySlot) {
+    menu->inventoryPosition++;
+    cursorEquipment--;
+  }
+  if(cursorEquipment > 22 && inventoryPosition + positionValue >= player->inventorySlot) {
+    cursorEquipment--;
+    positionValue--;
+  }
+  if(cursorEquipment < 22 && inventoryPosition == 0) cursorEquipment++;
+  if(cursorEquipment < 22 && inventoryPosition > 0) {
+    menu->inventoryPosition--;
+    cursorEquipment++;
+  }
+  print(to_string(positionValue), 3, 54);
 }
 
 void Menu::showMenu(int x, int y) {
@@ -21,14 +44,28 @@ void Menu::showMenu(int x, int y) {
   print("0.Menu", x, y++);
 }
 
-void Menu::showInventory(int x, int y, Player* player) {
+void Menu::showInventory(int x, int y, Player* player, Menu* menu) {
   clearMenu();
+  menu->inventoryUpAndDownChecker(menu, player);
   print("Inventory:", 23, y++);
-  for(i = 0; i < player->inventorySlot; i++) {
-    if(player->inventoryItemAmount[i] == -1)
-      print(to_string(i+1) + "." + player->inventory[i], x, y++);
-    else
-      print(to_string(i+1) + "." + player->inventory[i] + ": " + to_string(player->inventoryItemAmount[i]), x, y++);
+  for(i = inventoryPosition; i < player->inventorySlot; i++) {
+    if(i >= inventoryPosition + 7) break;
+    if(cursorEquipment == y && player->inventoryItemAmount[i] == -1) {
+      print("--> " + to_string(i+1) + "." + player->inventory[i], 2, y++);
+      continue;
+    }
+    else if(player->inventoryItemAmount[i] == -1) {
+      print("    " + to_string(i+1) + "." + player->inventory[i], 2, y++);
+      continue;
+    }
+    else if(cursorEquipment == y && player->inventoryItemAmount[i] > 0) {
+      print("--> " + to_string(i+1) + "." + player->inventory[i] + ": " + to_string(player->inventoryItemAmount[i]), x, y++);
+      continue;
+    }
+    else {
+      print("    " + to_string(i+1) + "." + player->inventory[i] + ": " + to_string(player->inventoryItemAmount[i]), x, y++);
+      continue;
+    }
   }
 }
 
@@ -48,45 +85,49 @@ void Menu::showStats(int x, int y, Player* player) {
 void Menu::showEquipment(int x, int y, Player* player) {
   clearMenu();
   print("Equipment:", 23, y++);
-  print("Head: [" + player->head + "]", 23, y++);
-  print("Chest: [" + player->chest + "]", 23, y++);
-  print("Left hand: [" + player->hands + "]", 2, y);
-  print("Right hand: [" + player->hands + "]", 30, y++);
-  print("Legs: [" + player->legs + "]", 23, y++);
-  print("Left foot: [" + player->feet + "]", 2, y);
-  print("Right foot: [" + player->feet + "]", 30, y++);
+  print("Head: [" + player->armour[0] + "]", 23, y++);
+  print("Chest: [" + player->armour[1] + "]", 23, y++);
+  print("Left hand: [" + player->armour[2] + "]", 2, y);
+  print("Right hand: [" + player->armour[2] + "]", 30, y++);
+  print("Legs: [" + player->armour[3] + "]", 23, y++);
+  print("Left foot: [" + player->armour[4] + "]", 2, y);
+  print("Right foot: [" + player->armour[4] + "]", 30, y++);
   print("Change equipment on:", 2, y);
   print("head: [z] chest: [x]", 23, y++);
   print("hands: [c] legs: [v] feet: [b]", 23, y);
 }
 
-int Menu::testValue = 0;
-int Menu::inventoryPosition = 0;
-
 void Menu::changeEquipment(int x, int y, Player* player, Equipment items[], string armourType, Menu* menu) {
   clearMenu();
-  cursorEquipment = testValue + 22;
-  if(testValue > 6) testValue--;
-  if(testValue < 0) testValue++;
-  if(cursorEquipment > 28) {
-    menu->inventoryPosition++;
-    cursorEquipment--;
-  }
-  if(cursorEquipment < 22 && inventoryPosition > 0) {
-    menu->inventoryPosition--;
-    cursorEquipment++;
-  }
-
+  j = 0;
+  menu->inventoryUpAndDownChecker(menu, player);
   print("Change " + armourType + ":", 22, y++);
   for(i = inventoryPosition; i < player->inventorySlot; i++) { //there
-    if(i >= inventoryPosition+7) break;
+    if(i >= inventoryPosition + 7) break;
     if(cursorEquipment == y && player->inventoryItemSubType[i] == armourType) {
-      print("--> " + to_string(i+1) + "." + player->inventory[i], 2, y++);
+      j++;
+      print("--> " + to_string(j) + "." + player->inventory[i], 2, y++);
       continue;
     }
     if(player->inventoryItemSubType[i] == armourType) {
-      print("    " + to_string(i+1) + "." + player->inventory[i], 2, y++);
+      j++;
+      print("    " + to_string(j) + "." + player->inventory[i], 2, y++);
       continue;
+    }
+  }
+}
+
+void Menu::switchEquipment(Player* player, Menu* menu) {
+  int currentItemSlot = positionValue;
+  std::string types[5] = {"Head", "Chest", "Hands", "Legs", "Feet"};
+  if(player->inventoryItemType[currentItemSlot] == "Armour") {
+    for(int i = 0; i < 5; i++) {
+      if(player->inventoryItemSubType[currentItemSlot] == types[i]) {
+        player->armour[i] = player->inventory[currentItemSlot];
+        player->defense -= player->armourValues[i];
+        player->defense += player->inventoryItemValue[currentItemSlot];
+        player->armourValues[i] = player->inventoryItemValue[currentItemSlot];
+      }
     }
   }
 }
